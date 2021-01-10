@@ -35,11 +35,9 @@ bot.on(UpdateType.Message, async ({ message }) => {
   } catch (e) {
     console.log('Error have occurred! ' + e)
   }
-  
 })
 
 bot.on(UpdateType.CallbackQuery, async ({ callback_query }) => {
-  console.log(callback_query)
   callbackQuery(bot, callback_query.message.chat.id, callback_query.message.message_id, callback_query.id, callback_query.data)
 })
 

@@ -9,7 +9,7 @@ export async function startCommand(bot, chatId) {
           `for new items every minute.\n\n` +
           
           `Commands:\n` +
-          `/add - order me to keep track of a new search. Paste a normal tori search link in the message after the command.\n` +
+          `/add - order me to keep track of a new search. Paste a tori search url in the same message after the command.\n` +
           `/list - list all your personal searches\n` +
           `/remove - remove an order\n` +
           `/stats - get common user statistics\n`,
@@ -35,8 +35,6 @@ export async function addCommand(bot, chatId, url) {
   } else {
     try {
       const args = new URLSearchParams(new URL(url).search)
-      console.log(url)
-      console.log(args.get('q'))
       const newestItem = await getNewToriItems(url)
       if (newestItem.length > 0) {
         await Order.create({
@@ -138,7 +136,6 @@ export async function checkAllOrders(bot) {
         await Order.where('id', order.id).update('newestToriItemDate', newItems[0].date)
       }
       for (const item of newItems) {
-        console.log(item)
         await bot.sendMessage({
           chat_id: order.chatId,
           text: 'New item online: ' + item.url,
