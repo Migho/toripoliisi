@@ -1,6 +1,6 @@
 import { DOMParser } from 'https://deno.land/x/deno_dom/deno-dom-wasm.ts';
 
-export default async function getNewToriItems(url, previousTopId, previousDate) {
+export async function getNewToriItems(url, previousTopId, previousDate) {
   const res = await fetch(url)
   const html = await res.text()
   const doc = new DOMParser().parseFromString(html, 'text/html')
@@ -37,4 +37,14 @@ export default async function getNewToriItems(url, previousTopId, previousDate) 
     i++
   }
   return results
+}
+
+export function getToriItemName(url) {
+  const args = new URLSearchParams(new URL(url).search)
+  const search = args.get('q')
+  if (search !== "") {
+    return search
+  } else {
+    return url
+  }
 }

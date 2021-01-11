@@ -10,7 +10,7 @@ export default class Order extends Model {
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING, // Deprecated.
     },
     chatId: {
       type: DataTypes.INTEGER,

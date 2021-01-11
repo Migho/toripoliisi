@@ -1,5 +1,5 @@
 import Order from './models/Order.js'
-import getNewToriItems from './tori.js'
+import { getNewToriItems, getToriItemName } from './tori.js'
 
 export async function startCommand(bot, chatId) {
   await bot.sendMessage({
@@ -18,7 +18,7 @@ export async function startCommand(bot, chatId) {
 
 export async function removeCommand(bot, chatId) {
   const orders = await Order.where('chatId', chatId).get()
-  const listOfRemovableOrders = orders.map(o => [{text: o.name, callback_data: o.id}])
+  const listOfRemovableOrders = orders.map(o => [{text: getToriItemName(o.url), callback_data: o.id}])
   await bot.sendMessage({
     chat_id: chatId,
     text: 'Which one would you like to remove?',
@@ -39,7 +39,7 @@ export async function addCommand(bot, chatId, url) {
       if (newestItem.length > 0) {
         await Order.create({
           chatId: chatId,
-          name: args.get('q'),
+          name: args.get('q'), // Depredated.
           url: url,
           newestToriItemId: newestItem[0].id,
           newestToriItemDate: newestItem[0].date,
@@ -47,7 +47,7 @@ export async function addCommand(bot, chatId, url) {
       } else {
         await Order.create({
           chatId: chatId,
-          name: args.get('q'),
+          name: args.get('q'), // Deprecated.
           url: url,
         })
       }
@@ -67,10 +67,11 @@ export async function addCommand(bot, chatId, url) {
 
 export async function listCommand(bot, chatId) {
   const orders = await Order.where('chatId', chatId).get()
-  const listOfItems = orders.map(o => o.name).join('\n')
+  const listOfItems = orders.map(o => "["+getToriItemName(o.url)+"]("+o.url+")").join('\n')
   await bot.sendMessage({
     chat_id: chatId,
-    text: 'You have ' + orders.length + ' active search(es):\n\n' + listOfItems
+    text: 'You have ' + orders.length + ' active search(es):\n\n' + listOfItems,
+    parse_mode: 'Markdown',
   })
 }
 

@@ -19,7 +19,6 @@ bot.on(UpdateType.Message, async ({ message }) => {
     if (command[0] === '/start') {
       startCommand(bot, message.chat.id)
     } else if (command[0] === '/remove') {
-      console.log(message)
       removeCommand(bot, message.chat.id)
     } else if (command[0] === '/add') {
       addCommand(bot, message.chat.id, command[1])
