@@ -14,6 +14,7 @@ export async function startCommand(bot, chatId) {
           `/remove - remove an order\n` +
           `/stats - get common user statistics\n`,
     parse_mode: 'Markdown',
+    disable_web_page_preview: true,
   })
 }
 
@@ -86,6 +87,7 @@ export async function listCommand(bot, chatId) {
       chat_id: chatId,
       text: 'You have ' + orders.length + ' active search(es):\n\n' + listOfItems,
       parse_mode: 'Markdown',
+      disable_web_page_preview: true,
     })
   }
 }
@@ -106,6 +108,7 @@ export async function debugListCommand(bot, chatId) {
   await bot.sendMessage({
     chat_id: chatId,
     text: orders,
+    disable_web_page_preview: true,
   })
 }
 
