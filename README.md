@@ -8,7 +8,7 @@ This bot is written using Deno. To start the bot, install [Deno](https://deno.la
 
 `deno run --allow-net --allow-env --allow-read --allow-write .\index.js`
 
-If you want Nodemon-like features where the server restarts when code changes are made, I recommend [Denon](https://deno.land/x/denon@2.4.6).
+In order for Bot to start successfully, you need .env file with telegram bot `TOKEN`. If you want Nodemon-like features where the server restarts when code changes are made, I recommend [Denon](https://deno.land/x/denon@2.4.6).
 
 ## Project future
 
