@@ -19,12 +19,19 @@ export async function startCommand(bot, chatId) {
 
 export async function removeCommand(bot, chatId) {
   const orders = await Order.where('chatId', chatId).get()
-  const listOfRemovableOrders = orders.map(o => [{text: getToriItemName(o.url), callback_data: o.id}])
-  await bot.sendMessage({
-    chat_id: chatId,
-    text: 'Which one would you like to remove?',
-    reply_markup: { inline_keyboard: listOfRemovableOrders },
-  })
+  if (orders.length === 0) {
+    await bot.sendMessage({
+      chat_id: chatId,
+      text: 'You have no active searches.',
+    })
+  } else {
+    const listOfRemovableOrders = orders.map(o => [{text: getToriItemName(o.url), callback_data: o.id}])
+    await bot.sendMessage({
+      chat_id: chatId,
+      text: 'Which one would you like to remove?',
+      reply_markup: { inline_keyboard: listOfRemovableOrders },
+    })
+  }
 }
 
 export async function addCommand(bot, chatId, url) {
@@ -35,6 +42,9 @@ export async function addCommand(bot, chatId, url) {
     })
   } else {
     try {
+      if (url.includes('m.tori.fi/')) {
+        url = url.replace('m.tori.fi/', 'tori.fi/')
+      }
       const newestItem = await getNewToriItems(url)
       if (newestItem.length > 0) {
         await Order.create({
@@ -65,12 +75,19 @@ export async function addCommand(bot, chatId, url) {
 
 export async function listCommand(bot, chatId) {
   const orders = await Order.where('chatId', chatId).get()
-  const listOfItems = orders.map(o => "["+getToriItemName(o.url)+"]("+o.url+")").join('\n')
-  await bot.sendMessage({
-    chat_id: chatId,
-    text: 'You have ' + orders.length + ' active search(es):\n\n' + listOfItems,
-    parse_mode: 'Markdown',
-  })
+  if (orders.length === 0) {
+    await bot.sendMessage({
+      chat_id: chatId,
+      text: 'You have no active searches.',
+    })
+  } else {
+    const listOfItems = orders.map(o => "["+getToriItemName(o.url)+"]("+o.url+")").join('\n')
+    await bot.sendMessage({
+      chat_id: chatId,
+      text: 'You have ' + orders.length + ' active search(es):\n\n' + listOfItems,
+      parse_mode: 'Markdown',
+    })
+  }
 }
 
 export async function statsCommand(bot, chatId) {
@@ -117,8 +134,8 @@ export async function callbackQuery(bot, chatId, messageId, queryId, queryData) 
     await bot.editMessageText({
       chat_id: chatId,
       message_id: messageId,
-      text: '~Which one would you like to remove?~ Removed!',
-      parse_mode: 'Markdown',
+      text: '~Which one would you like to remove?~ Removed',
+      parse_mode: 'MarkdownV2',
     })
   } catch(e) {
     console.log("Couldn't edit message in callback query. The user probably clicked multiple buttons.")
