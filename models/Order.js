@@ -9,9 +9,6 @@ export default class Order extends Model {
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
-      type: DataTypes.STRING, // Deprecated.
-    },
     chatId: {
       type: DataTypes.INTEGER,
     },
