@@ -6,13 +6,14 @@ export async function startCommand(bot, chatId) {
     chat_id: chatId,
     text: `Hello! I am Toripoliisi. I will keep an eye on your Tori searches and notify you for new items. Tori also provides ` +
           `such feature (called 'Hakuvahti'), but the notification is sent only daily which often is not enough. I check Tori ` +
-          `for new items every minute.\n\n` +
+          `for new items every minute. Source code can be found from [Github](https://github.com/Migho/toripoliisi).\n\n` +
           
           `Commands:\n` +
           `/add - order me to keep track of a new search. Paste a tori search url in the same message after the command.\n` +
           `/list - list all your personal searches\n` +
           `/remove - remove an order\n` +
           `/stats - get common user statistics\n`,
+    parse_mode: 'Markdown',
   })
 }
 
@@ -30,16 +31,14 @@ export async function addCommand(bot, chatId, url) {
   if (url === undefined) {
     await bot.sendMessage({
       chat_id: chatId,
-      text: 'Please provide the URL after the command',
+      text: 'Please provide the URL after the command.',
     })
   } else {
     try {
-      const args = new URLSearchParams(new URL(url).search)
       const newestItem = await getNewToriItems(url)
       if (newestItem.length > 0) {
         await Order.create({
           chatId: chatId,
-          name: args.get('q'), // Depredated.
           url: url,
           newestToriItemId: newestItem[0].id,
           newestToriItemDate: newestItem[0].date,
@@ -47,7 +46,6 @@ export async function addCommand(bot, chatId, url) {
       } else {
         await Order.create({
           chatId: chatId,
-          name: args.get('q'), // Deprecated.
           url: url,
         })
       }
@@ -119,8 +117,8 @@ export async function callbackQuery(bot, chatId, messageId, queryId, queryData) 
     await bot.editMessageText({
       chat_id: chatId,
       message_id: messageId,
-      text: '~Which one would you like to remove?~ Removed',
-      parse_mode: 'MarkdownV2',
+      text: '~Which one would you like to remove?~ Removed!',
+      parse_mode: 'Markdown',
     })
   } catch(e) {
     console.log("Couldn't edit message in callback query. The user probably clicked multiple buttons.")
