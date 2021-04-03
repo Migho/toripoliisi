@@ -19,8 +19,8 @@ export default class Order extends Model {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    newestToriItemDate: {
-      type: DataTypes.DATE,
+    newestToriItemTimestamp: {
+      type: DataTypes.TIMESTAMP,
       allowNull: true,
     },
   }

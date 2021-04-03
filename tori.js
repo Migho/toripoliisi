@@ -1,40 +1,30 @@
-import { DOMParser } from 'https://deno.land/x/deno_dom/deno-dom-wasm.ts';
+const API_URL = 'https://api.tori.fi/api/v1.2/public/ads?'
 
-export async function getNewToriItems(url, previousTopId, previousDate) {
-  const res = await fetch(url)
-  const html = await res.text()
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  const items = doc.querySelectorAll(':not(.polepos_row).item_row_flex')
+export async function getNewToriItems(url, previousId, previousTimestamp) {
+  const response = await fetch(API_URL + url.split('?')[1])
+  const json = await response.json()
+
+  // Sort by timestamp
+  const sortedItems = json.list_ads.sort((a, b) => b.ad.list_time.value - a.ad.list_time.value)
+
   const results = []
-  let i = 1
-  let id = 0
+  for (const item of sortedItems) {
+    const timestamp = item.ad.list_time.value
+    if (timestamp <= previousTimestamp) break
 
-  for (const item of items) {
-    id = parseInt(item.attributes.id.replace(/\D/g,''))
-    if (previousTopId !== null && id <= previousTopId) break // we are making an assumption here that smaller ID = older item
-
-    const url = item.attributes.href
-    const rawDate = item.querySelector('.date_image').childNodes[0].nodeValue
-
-    const now = new Date();
-    const hours = rawDate.split(':')[0].slice(-2)
-    const minutes = rawDate.split(':')[1].substring(0,2)
-    let published = null
-    if (rawDate.includes('t�n��n')) {
-      published = new Date(now.getFullYear(), now.getMonth(), now.getDay(), hours, minutes)
-    } else if (rawDate.includes('eilen')) {
-      published = new Date(now.getFullYear(), now.getMonth(), now.getDay()-1, hours, minutes)
-    } else {
-      break // it is simpler to just skip these, after all the user is probably not interested about items posted two days ago
-    }
-    if (previousDate !== null && published < previousDate) break // should not be necessary if the ID break works
+    const id = item.ad.list_id_code
+    const url = item.ad.share_link
+    const subject = item.ad.subject
+    console.log(item.ad)
+    const price = item.ad.list_price?.label
 
     results.push({
-      id: id,
-      url: url,
-      date: published,
+      id,
+      url,
+      timestamp,
+      subject,
+      price,
     })
-    i++
   }
   return results
 }

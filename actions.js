@@ -6,8 +6,12 @@ export async function startCommand(bot, chatId) {
     chat_id: chatId,
     text: `Hello! I am Toripoliisi. I will keep an eye on your Tori searches and notify you for new items. Tori also provides ` +
           `such feature (called 'Hakuvahti'), but the notification is sent only daily which often is not enough. I check Tori ` +
-          `for new items every minute. Source code can be found from [Github](https://github.com/Migho/toripoliisi).\n\n` +
-          
+          `for new items every minute. Source code can be found from [Github](https://github.com/Migho/toripoliisi). Some of ` +
+          `the apartments can cause issues because Tori keeps updating the listing time (wtf tori?), this is a known issue.\n\n`
+
+          `3.4.2021 Toripoliisi had full reset, because it was malfunctioning + Tori made major changes to the ID logic of ` +
+          `items. Sorry for this!\n\n` +
+
           `Commands:\n` +
           `/add - order me to keep track of a new search. Paste a tori search url in the same message after the command.\n` +
           `/list - list all your personal searches\n` +
@@ -52,7 +56,7 @@ export async function addCommand(bot, chatId, url) {
           chatId: chatId,
           url: url,
           newestToriItemId: newestItem[0].id,
-          newestToriItemDate: newestItem[0].date,
+          newestToriItemTimestamp: newestItem[0].timestamp,
         })
       } else {
         await Order.create({
@@ -82,7 +86,7 @@ export async function listCommand(bot, chatId) {
       text: 'You have no active searches.',
     })
   } else {
-    const listOfItems = orders.map(o => "["+getToriItemName(o.url)+"]("+o.url+")").join('\n')
+    const listOfItems = orders.map(o => `[${getToriItemName(o.url)}](${o.url})`).join('\n')
     await bot.sendMessage({
       chat_id: chatId,
       text: 'You have ' + orders.length + ' active search(es):\n\n' + listOfItems,
@@ -149,15 +153,19 @@ export async function checkAllOrders(bot) {
   const allOrders = await Order.all()
   for (const order of allOrders) {
     try {
-      const newItems = await getNewToriItems(order.url, order.newestToriItemId, order.newestToriItemDate)
+      const newItems = await getNewToriItems(order.url, order.newestToriItemId, order.newestToriItemTimestamp)
       if (newItems.length > 0) {
+        // First item should always be the newest item
         await Order.where('id', order.id).update('newestToriItemId', newItems[0].id)
-        await Order.where('id', order.id).update('newestToriItemDate', newItems[0].date)
+        await Order.where('id', order.id).update('newestToriItemTimestamp', newItems[0].timestamp)
       }
       for (const item of newItems) {
+        const subject = item.subject.replace("[", "(").replace("]", ")")
         await bot.sendMessage({
           chat_id: order.chatId,
-          text: 'New item online: ' + item.url,
+          text: `New item: [${subject}](${item.url})${item.price ? ` - ${item.price}` : ``}`,
+          parse_mode: 'Markdown',
+          // disable_web_page_preview: true,
         })
       }
     } catch (error) {
