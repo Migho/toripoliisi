@@ -7,7 +7,7 @@ export async function startCommand(bot, chatId) {
     text: `Hello! I am Toripoliisi. I will keep an eye on your Tori searches and notify you for new items. Tori also provides ` +
           `such feature (called 'Hakuvahti'), but the notification is sent only daily which often is not enough. I check Tori ` +
           `for new items every minute. Source code can be found from [Github](https://github.com/Migho/toripoliisi). Some of ` +
-          `the apartments can cause issues because Tori keeps updating the listing time (wtf tori?), this is a known issue.\n\n`
+          `the apartments can cause issues because Tori keeps updating the listing time (wtf tori?), this is a known issue.\n\n` +
 
           `3.4.2021 Toripoliisi had full reset, because it was malfunctioning + Tori made major changes to the ID logic of ` +
           `items. Sorry for this!\n\n` +
