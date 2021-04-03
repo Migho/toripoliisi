@@ -15,7 +15,6 @@ export async function getNewToriItems(url, previousId, previousTimestamp) {
     const id = item.ad.list_id_code
     const url = item.ad.share_link
     const subject = item.ad.subject
-    console.log(item.ad)
     const price = item.ad.list_price?.label
 
     results.push({
