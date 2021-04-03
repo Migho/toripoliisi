@@ -42,7 +42,7 @@ export async function getNewToriItems(url, previousTopId, previousDate) {
 export function getToriItemName(url) {
   const args = new URLSearchParams(new URL(url).search)
   const search = args.get('q')
-  if (search !== "") {
+  if (search) {
     return search
   } else {
     return url
